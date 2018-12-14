@@ -14,6 +14,7 @@ func Check(c app.Eng) {
 		token解析
 		获取权限
 	*/
+
 	fmt.Println("token-->", token)
 	// write something to the client as a response.
 	c.Values().Set("user", "1111")

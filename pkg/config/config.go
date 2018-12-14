@@ -86,8 +86,17 @@ func (c Config) loadRedis() {
 	}
 
 	a := EngRds.Info()
-	s := strings.Split(strings.Replace(fmt.Sprintf("%s", a), "info: ", "", 1), "#")
-	demo(s)
+	demo(fmt.Sprintf("%s", a))
+	//s := strings.Replace(
+	//	strings.Replace(fmt.Sprintf("%s", a), "info:", "", 1),
+	//	"\r", "", -1)
+	//sData := strings.Split(s, "#")
+	//for _, _v := range sData {
+	//	_d := strings.Split(_v, "\n")
+	//	//fmt.Println(_k,_d)
+	//	demo(_d)
+	//}
+	//demo(sData)
 
 	if err != nil {
 		panic(err)
@@ -95,34 +104,36 @@ func (c Config) loadRedis() {
 
 }
 
-func demo(data []string) {
-	s := " {"
-	for _, value := range data {
-		_t := strings.Split(strings.Replace(value, "\n", "", -1), "\r")
-		_s := strings.TrimSpace(_t[0])
-		if len(_s) > 1 {
-			s += " \"" + _s + "\":{"
-			fmt.Println(_t[1:])
-			for i, _v := range _t[1:] {
-				org := strings.Split(_v, ":")
-				if len(org) > 1 {
-					if len(_t[1:]) == (i) {
-						s += "\"" + strings.Trim(org[0], "\n") + "\":\"" + org[1] + "\""
-					} else {
-						s += "\"" + strings.Trim(org[0], "\n") + "\":\"" + org[1] + "\","
-					}
-				}
-			}
-			s += "},"
-		}
-	}
-	fmt.Println(s + "}")
-	//
-	var f map[string]interface{}
-	err := json.Unmarshal([]byte(s), &f)
-	fmt.Println(err)
-	fmt.Println(f)
+func demo(a string) {
+	ret := []string{}
+	s := strings.Replace(
+		strings.Replace(a, "info:", "", 1),
+		"\r", "", -1)
+	sData := strings.Split(s, "#")
+	for _, _v := range sData {
+		_d := strings.Split(_v, "\n")
+		key := strings.Replace(_d[0], " ", "", -1)
 
+		if len(key) < 2 {
+			continue
+		}
+		s := []string{}
+		for _, v := range _d[1:] {
+
+			if strings.Contains(v, ":") {
+				_s := strings.Split(v, ":")
+				s = append(s, "\""+_s[0]+"\":\""+_s[1]+"\"")
+			}
+		}
+		ret = append(ret, "\""+key+"\":{"+strings.Join(s, ",")+"}")
+	}
+
+	json_str := "{" + strings.Join(ret, ",") + "}"
+
+	m := make(map[string]interface{})
+	err := json.Unmarshal([]byte(json_str), &m)
+	fmt.Println(err)
+	fmt.Println(m)
 }
 
 func (c *Config) loadMgo() {
