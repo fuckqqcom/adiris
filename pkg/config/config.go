@@ -44,7 +44,7 @@ var (
 func InitConfig(path string) {
 	config := Config{}
 	Load(path, &config)
-	config.loadDb()
+	//config.loadDb()
 	config.loadRedis()
 	//config.loadMgo()
 }

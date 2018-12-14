@@ -1,0 +1,17 @@
+{
+  "DB": {
+    "Host": "127.0.0.1",
+    "Port": 3306,
+    "User": "root",
+    "Pwd": "abcd",
+    "Db":"admin",
+    "Show":true,
+    "MaxOpen": 256,
+    "MaxIdle": 150
+  },
+  "Redis": {
+    "Dns": "127.0.0.1:6379",
+    "MinIdle": 5,
+    "PoolSize":200
+  }
+}
