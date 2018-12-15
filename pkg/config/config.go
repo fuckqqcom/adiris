@@ -42,7 +42,7 @@ var (
 func InitConfig(path string) {
 	config := Config{}
 	Load(path, &config)
-	//config.loadDb()
+	config.loadDb()
 	config.loadRedis()
 	config.loadMgo()
 }
@@ -80,8 +80,6 @@ func (c Config) loadRedis() {
 
 	_, err := EngRds.Ping().Result()
 
-	EngRds.FlushDBAsync()
-
 	//a := EngRds.Info()
 	//demo(fmt.Sprintf("%s", a))
 
@@ -93,15 +91,13 @@ func (c Config) loadRedis() {
 
 func (c *Config) loadMgo() {
 	var err error
-	fmt.Println(c.Mgo.Dns)
 	EngMgo, err = mongo.NewClientWithOptions(c.Mgo.Dns)
 	ctx, _ := context.WithTimeout(context.Background(), 2*time.Second)
-	//ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	err = EngMgo.Connect(ctx)
 	err = EngMgo.Ping(ctx, readpref.Primary())
 	fmt.Println(err)
-	//
-	//if err != nil {
-	//	panic(err)
-	//}
+	//	//
+	//	//if err != nil {
+	//	//	panic(err)
+	//	//}
 }
