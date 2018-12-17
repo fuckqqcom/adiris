@@ -38,26 +38,26 @@ func Register(account, pwd, gid string) int {
 	uid := commons.EncodeMd5(commons.StringJoin(account, gid))
 	pw := commons.EncodeMd5(commons.StringJoin(pwd, account, gid))
 
-	//mu := make(chan map[string]interface{})
-	//mg := make(chan map[string]interface{})
+	mu := make(chan map[string]interface{})
+	mg := make(chan map[string]interface{})
 
 	//if GetUserByUid(uid) || !GetGidExist(gid) {
 	//	return e.UserExist
 	//}
 
-	if GetUserByUidTb(uid) {
-		return e.UserExist
-	}
-	if !GetGidExistTb(gid) {
-		return e.GroupNotExist
-	}
-	//go GetUserByUid(uid, mu)
-	//go GetGidExist(gid, mg)
-	//rmu := <-mu
-	//rmg := <-mg
-	//if rmu["flag"] == true || rmg["flag"] == false {
+	//if GetUserByUidTb(uid) {
 	//	return e.UserExist
 	//}
+	//if !GetGidExistTb(gid) {
+	//	return e.GroupNotExist
+	//}
+	go GetUserByUid(uid, mu)
+	go GetGidExist(gid, mg)
+	rmu := <-mu
+	rmg := <-mg
+	if rmu["flag"] == true || rmg["flag"] == false {
+		return e.UserExist
+	}
 
 	u := User{Account: account, Password: pw, Id: uid, IsDel: 1, Status: 0}
 	ug := UserGroup{Uid: uid, Gid: gid, Id: commons.EncodeMd5(commons.StringJoin(uid, gid)), IsDel: 1, Status: 0}
