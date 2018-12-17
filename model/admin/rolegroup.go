@@ -1,6 +1,6 @@
 package admin
 
-type RoleDept struct {
+type RoleGroup struct {
 	Rid string
 	Did string
 	T   `xorm:"extends"`

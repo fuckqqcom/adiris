@@ -2,7 +2,6 @@ package monitor
 
 import (
 	"adiris/pkg/config"
-	"context"
 	"encoding/json"
 	"fmt"
 	"strings"
@@ -13,14 +12,13 @@ func RedisInfo() {
 	info := config.EngRds.Info()
 
 	m := DealRedisInfo(fmt.Sprintf("%s", info))
-	c := config.EngMgo.Database("rules").Collection("RedisInfo")
-	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
-
-	one, err := c.InsertOne(ctx, m)
-	fmt.Println(one, err)
+	c := config.EngMgo.DB("rules").C("RedisInfo")
+	fmt.Println("insert into data")
+	e := c.Insert(&m)
+	fmt.Println(e)
 
 }
-func DealRedisInfo(a string) map[string]interface{} {
+func DealRedisInfo(a string) interface{} {
 	ret := []string{}
 	sData := strings.Split(strings.Replace(
 		strings.Replace(a, "info:", "", 1),

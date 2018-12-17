@@ -1,12 +1,10 @@
 package config
 
 import (
-	"context"
 	"fmt"
+	"github.com/globalsign/mgo"
 	"github.com/go-redis/redis"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/mongodb/mongo-go-driver/mongo"
-	"github.com/mongodb/mongo-go-driver/mongo/readpref"
 	"github.com/xormplus/xorm"
 	"time"
 )
@@ -34,7 +32,7 @@ type Config struct {
 }
 
 var (
-	EngMgo *mongo.Client
+	EngMgo *mgo.Session
 	EngDb  *xorm.Engine
 	EngRds *redis.Client
 )
@@ -44,7 +42,7 @@ func InitConfig(path string) {
 	Load(path, &config)
 	config.loadDb()
 	config.loadRedis()
-	config.loadMgo()
+	//config.loadMgo()
 }
 
 func (c *Config) loadDb() {
@@ -91,13 +89,19 @@ func (c Config) loadRedis() {
 
 func (c *Config) loadMgo() {
 	var err error
-	EngMgo, err = mongo.NewClientWithOptions(c.Mgo.Dns)
-	ctx, _ := context.WithTimeout(context.Background(), 2*time.Second)
-	err = EngMgo.Connect(ctx)
-	err = EngMgo.Ping(ctx, readpref.Primary())
-	fmt.Println(err)
-	//	//
-	//	//if err != nil {
-	//	//	panic(err)
-	//	//}
+	dialInfo := &mgo.DialInfo{
+		Addrs:     []string{c.Mgo.Dns},
+		Source:    "mdata",
+		Username:  "xiaohan",
+		Password:  "xiaohanmongodata",
+		Timeout:   60 * time.Second,
+		PoolLimit: 100,
+	}
+
+	EngMgo, err = mgo.DialWithInfo(dialInfo)
+
+	//
+	if err != nil {
+		panic(err)
+	}
 }

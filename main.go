@@ -1,12 +1,12 @@
 package main
 
 import (
-	"adiris/monitor"
 	"adiris/pkg/config"
+	"adiris/routers"
 )
 
 func main() {
-	//routers.InitRouter()
+	routers.InitRouter()
 	config.InitConfig("config/config.json")
-	monitor.RedisInfo()
+	//monitor.RedisInfo()
 }
