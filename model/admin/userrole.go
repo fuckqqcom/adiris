@@ -7,5 +7,5 @@ type UserRole struct {
 	Status int
 	Uid    string
 	Rid    string
-	T      `xorm:"extends"`
+	at     `xorm:"extends"`
 }

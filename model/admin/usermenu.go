@@ -1,7 +1,11 @@
 package admin
 
 type UserMenu struct {
-	Uid string
-	Mid string
-	T   `xorm:"extends"`
+	Id     string //主键id
+	IsDel  int
+	Remark string
+	Status int
+	Uid    string
+	Mid    string
+	at     `xorm:"extends"`
 }

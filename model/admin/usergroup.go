@@ -7,5 +7,5 @@ type UserGroup struct {
 	Status int
 	Uid    string
 	Gid    string
-	T
+	at     `xorm:"extends"`
 }

@@ -16,7 +16,7 @@ type User struct {
 	Password string //密码
 	Email    string //邮箱
 	Phone    string //手机号码
-	T        `xorm:"extends"`
+	at       `xorm:"extends"`
 }
 
 /**
@@ -38,12 +38,20 @@ func Register(account, pwd, gid string) int {
 	uid := commons.EncodeMd5(commons.StringJoin(account, gid))
 	pw := commons.EncodeMd5(commons.StringJoin(pwd, account, gid))
 
-	if GetUserByUid(uid) {
+	mu := make(chan map[string]interface{})
+	mg := make(chan map[string]interface{})
+
+	//if GetUserByUid(uid) || !GetGidExist(gid) {
+	//	return e.UserExist
+	//}
+	go GetUserByUid(uid, mu)
+	go GetGidExist(gid, mg)
+	rmu := <-mu
+	rmg := <-mg
+	if rmu["flag"] == true || rmg["flag"] == false {
 		return e.UserExist
 	}
-	if !GetGidExist(gid) {
-		return e.GroupNotExist
-	}
+
 	u := User{Account: account, Password: pw, Id: uid, IsDel: 1, Status: 0}
 	ug := UserGroup{Uid: uid, Gid: gid, Id: commons.EncodeMd5(commons.StringJoin(uid, gid)), IsDel: 1, Status: 0}
 	//给一个默认的角色id
@@ -70,11 +78,15 @@ func Register(account, pwd, gid string) int {
 /**
 查找用户是否存在 true：存在 false 不存在
 */
-func GetUserByUid(uid string) bool {
+func GetUserByUid(uid string, c chan map[string]interface{}) {
 	exist, err := config.EngDb.Where("id = ? ", uid).Exist(&User{})
 
+	m := make(map[string]interface{})
 	if commons.CheckErr(err, exist) && exist {
-		return true
+		m["flag"] = true
+		c <- m
+	} else {
+		m["flag"] = false
+		c <- m
 	}
-	return false
 }

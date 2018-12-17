@@ -10,10 +10,10 @@ func CheckErrInsert(s *xorm.Session, a interface{}) bool {
 	if _, err := s.Insert(a); err != nil {
 		if err := recover(); err != nil {
 			//TODO
-			fmt.Println(err)
+			fmt.Println("error--->", err)
 			//conf.Logger.Warn("sql panic", err)
 		}
-		fmt.Println(err, a)
+		fmt.Println("error--->", err, a)
 		//conf.Logger.Warn("sql", err)
 		s.Rollback()
 		return false

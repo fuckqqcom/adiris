@@ -13,17 +13,20 @@ type Group struct {
 	Name     string //机构名称
 	ParentId string //上级机构Id ,一级机构为0
 	OrderNum int    //排序
-	T        `xorm:"extends"`
+	at       `xorm:"extends"`
 }
 
 /**
 检查组织结构是否存在
 */
-func GetGidExist(id string) bool {
-	exist, err := config.EngDb.Where("id = ? and Parent_id = 0 ", id).Exist(&Group{})
-
+func GetGidExist(id string, c chan map[string]interface{}) {
+	exist, err := config.EngDb.Where("id = ? and Parent_id = '0' ", id).Exist(&Group{})
+	m := make(map[string]interface{})
 	if commons.CheckErr(err, exist) && exist {
-		return true
+		m["flag"] = true
+		c <- m
+	} else {
+		m["flag"] = false
+		c <- m
 	}
-	return false
 }

@@ -1,7 +1,11 @@
 package admin
 
 type Role struct {
-	Rid  string
-	Name string
-	T    `xorm:"extends"`
+	Id     string //主键id
+	IsDel  int
+	Remark string
+	Status int
+	Rid    string
+	Name   string
+	at     `xorm:"extends"`
 }

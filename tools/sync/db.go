@@ -16,5 +16,6 @@ func main() {
 	config.EngDb.Sync2(new(admin.RoleMenu))
 	config.EngDb.Sync2(new(admin.UserRole))
 	config.EngDb.Sync2(new(admin.UserMenu))
+	config.EngDb.Sync2(new(admin.UserGroup))
 
 }
