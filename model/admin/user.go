@@ -8,11 +8,11 @@ import (
 )
 
 type User struct {
-	Id       string //主键id
+	Id       string `xorm:"varchar(100) notnull pk index(account) unique 'id'"` //主键id
 	IsDel    int
 	Remark   string
 	Status   int
-	Account  string //账号
+	Account  string `xorm:"varchar(100) notnull unique 'account'"` //账号
 	Password string //密码
 	Email    string //邮箱
 	Phone    string //手机号码

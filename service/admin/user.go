@@ -1,6 +1,11 @@
 package admin
 
-import "adiris/model/admin"
+import (
+	"adiris/model/admin"
+	"adiris/tools/common"
+	"fmt"
+	"time"
+)
 
 type User struct {
 	Account  string `json:"account" validate:"required"`
@@ -9,5 +14,8 @@ type User struct {
 }
 
 func (u User) Register() int {
-	return admin.Register(u.Account, u.Password, u.Gid)
+	//模拟实战 ，这里随机
+
+	a := commons.RandStringBytes(4) + fmt.Sprintf("%s", time.Now().UnixNano())
+	return admin.Register(u.Account+a, u.Password+a, u.Gid)
 }
