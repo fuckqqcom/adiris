@@ -30,3 +30,13 @@ func GetGidExist(id string, c chan map[string]interface{}) {
 		c <- m
 	}
 }
+
+func GetGidExistTb(id string) bool {
+	exist, err := config.EngDb.Where("id = ? and Parent_id = '0' ", id).Exist(&Group{})
+	//m := make(map[string]interface{})
+	if commons.CheckErr(err, exist) && exist {
+		return true
+	} else {
+		return false
+	}
+}
