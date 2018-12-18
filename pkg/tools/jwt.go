@@ -32,16 +32,24 @@ func GenerateToken(username, password string) (string, error) {
 	return token, err
 }
 
-func ParseToken(token string) (*Claims, error) {
+/**
+协成处理
+*/
+func ParseToken(token string, c chan map[string]interface{}) {
+	m := make(map[string]interface{})
 	tokenClaims, err := jwt.ParseWithClaims(token, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+
 		return jwtSecret, nil
 	})
 
 	if tokenClaims != nil {
 		if claims, ok := tokenClaims.Claims.(*Claims); ok && tokenClaims.Valid {
-			return claims, nil
+			m["token"] = claims
+			m["error"] = nil
+			c <- m
 		}
 	}
-
-	return nil, err
+	m["token"] = nil
+	m["error"] = err
+	c <- m
 }

@@ -16,8 +16,16 @@ func Check(c app.Eng) {
 	*/
 
 	fmt.Println("token-->", token)
-	// write something to the client as a response.
-	c.Values().Set("user", "1111")
-	c.Values().Set("value", 100)
+	//m := make(chan map[string]interface{})
+	//fmt.Println(m, c)
+	//tools.ParseToken(token, m)
+	//rm := <-m
+	//
+	//if rm["error"] == nil{
+	//	claims := rm["token"]
+	//	fmt.Println(claims)
+	//}
+	//c.Values().Set("user", "1111")
+	//c.Values().Set("value", 100)
 	c.Next() // execute the "after" handler registered via `DoneGlobal`.
 }
