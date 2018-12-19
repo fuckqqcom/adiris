@@ -1,5 +1,11 @@
 package admin
 
+import (
+	"adiris/pkg/config"
+	"adiris/pkg/e"
+	"adiris/tools/common"
+)
+
 type Menu struct {
 	Id       string //主键id
 	IsDel    int
@@ -11,4 +17,49 @@ type Menu struct {
 	//Perms    string
 	Type int //0:目录(一级tab) 1:菜单 2:按钮
 	at   `xorm:"extends"`
+}
+
+/**
+添加菜单/todo
+*/
+
+func AddMenu(name, remark string, status int) int {
+	m := Menu{Id: commons.EncodeMd5(name), IsDel: 1, Name: name, Status: status, Remark: remark}
+
+	//if GetGidExistTb(m.Id) {
+	//	return e.RoleExist
+	//}
+	return CheckInt64(config.EngDb.Insert(m))
+}
+
+/**
+删除机构
+*/
+
+func DeleteMenu(id string) int {
+	m := Menu{Id: id}
+	return CheckInt64(config.EngDb.Where("id = ?", id).Delete(m))
+}
+
+/**
+修改机构
+*/
+
+func UpdateMenu(name, remark string, status int) int {
+	m := Menu{Id: commons.EncodeMd5(name), IsDel: 1, Name: name, Status: status, Remark: remark}
+	return CheckInt64(config.EngDb.Where("id = ? ", r.Id).Cols("remark", "status", "name").Update(m))
+}
+
+/**
+查询机构
+*/
+
+func GetMenuList(pn, ps int) interface{} {
+	var g []Menu
+	count, err := config.EngDb.Where("is_del = 1 and status = 1").Desc("create_time").Limit(ps, (pn-1)*ps).FindAndCount(&g)
+	CheckInt64(count, err)
+	m := make(map[string]interface{})
+	m["count"] = int(count)
+	m["data"] = g
+	return m
 }

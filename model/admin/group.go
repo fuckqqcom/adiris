@@ -2,6 +2,7 @@ package admin
 
 import (
 	"adiris/pkg/config"
+	"adiris/pkg/e"
 	"adiris/tools/common"
 )
 
@@ -14,6 +15,51 @@ type Group struct {
 	ParentId string //上级机构Id ,一级机构为0
 	OrderNum int    //排序
 	at       `xorm:"extends"`
+}
+
+/**
+添加机构(组)
+*/
+
+func AddGroup(name, remark string, status int) int {
+	g := Group{Id: commons.EncodeMd5(name), IsDel: 1, Name: name, Status: status, Remark: remark}
+
+	if GetGidExistTb(g.Id) {
+		return e.RoleExist
+	}
+	return CheckInt64(config.EngDb.Insert(g))
+}
+
+/**
+删除机构
+*/
+
+func DeleteGroup(id string) int {
+	g := Group{Id: id}
+	return CheckInt64(config.EngDb.Where("id = ?", id).Delete(g))
+}
+
+/**
+修改机构
+*/
+
+func UpdateGroup(name, remark string, status int) int {
+	r := Role{Id: commons.EncodeMd5(name), IsDel: 1, Name: name, Status: status, Remark: remark}
+	return CheckInt64(config.EngDb.Where("id = ? ", r.Id).Cols("remark", "status", "name").Update(r))
+}
+
+/**
+查询机构
+*/
+
+func GetGroupList(pn, ps int) interface{} {
+	var g []Group
+	count, err := config.EngDb.Where("is_del = 1 and status = 1").Desc("create_time").Limit(ps, (pn-1)*ps).FindAndCount(&g)
+	CheckInt64(count, err)
+	m := make(map[string]interface{})
+	m["count"] = int(count)
+	m["data"] = g
+	return m
 }
 
 /**
