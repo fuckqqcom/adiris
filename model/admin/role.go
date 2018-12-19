@@ -7,19 +7,20 @@ import (
 )
 
 type Role struct {
-	Id     string //主键id
-	IsDel  int    // -1表示删除
-	Remark string
-	Status int
-	Rid    string
-	Name   string
+	Id     string `xorm:"id" json:"id"`         //主键id
+	IsDel  int    `xorm:"is_del" json:"is_del"` // -1表示删除
+	Remark string `xorm:"remark" json:"remark"`
+	Status int    `xorm:"status" json:"status"`
+	Name   string `xorm:"name" json:"name"`
 	at     `xorm:"extends"`
 }
 
 /**
 角色的增删改查
 */
-func (r Role) AddRole() int {
+func AddRole(name, remark string, status int) int {
+	r := Role{Id: commons.EncodeMd5(name), IsDel: 1, Name: name, Status: status, Remark: remark}
+
 	if GetIdByRole(r.Id) {
 		return e.RoleExist
 	}
@@ -30,18 +31,33 @@ func GetIdByRole(id string) bool {
 	return CheckBool(config.EngDb.Where("id = ? and status = 1 and is_del = 1 ", id).Exist(&Role{}))
 }
 
-func CheckBool(exist bool, err error) bool {
-	if commons.CheckErr(err, exist) && exist {
-		return true
-	} else {
-		return false
-	}
+/**
+删除角色:单个删除
+*/
+func DeleteRole(id string) int {
+	r := Role{Id: id}
+	return CheckInt64(config.EngDb.Where("id = ?", id).Delete(r))
 }
 
-func CheckInt64(exist int64, err error) int {
-	if commons.CheckErr(err, exist) && exist != 0 {
-		return e.Success
-	} else {
-		return e.Error
-	}
+/**
+修改角色
+*/
+
+func UpdateRole(name, remark string, status int) int {
+	r := Role{Id: commons.EncodeMd5(name), IsDel: 1, Name: name, Status: status, Remark: remark}
+	return CheckInt64(config.EngDb.Where("id = ? ", r.Id).Cols("remark", "status", "name").Update(r))
+}
+
+/**
+查询角色集合
+*/
+
+func GetRoleList(pn, ps int) interface{} {
+	r := []Role{}
+	count, err := config.EngDb.Where("is_del = 1 and status = 1").Desc("create_time").Limit(ps*pn, pn-1).FindAndCount(&r)
+	CheckInt64(count, err)
+	m := make(map[string]interface{})
+	m["count"] = int(count)
+	m["data"] = r
+	return m
 }
