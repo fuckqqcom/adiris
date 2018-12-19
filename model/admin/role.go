@@ -53,8 +53,8 @@ func UpdateRole(name, remark string, status int) int {
 */
 
 func GetRoleList(pn, ps int) interface{} {
-	r := []Role{}
-	count, err := config.EngDb.Where("is_del = 1 and status = 1").Desc("create_time").Limit(ps*pn, pn-1).FindAndCount(&r)
+	var r []Role
+	count, err := config.EngDb.Where("is_del = 1 and status = 1").Desc("create_time").Limit(ps, (pn-1)*ps).FindAndCount(&r)
 	CheckInt64(count, err)
 	m := make(map[string]interface{})
 	m["count"] = int(count)
