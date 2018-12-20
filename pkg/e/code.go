@@ -7,6 +7,7 @@ const (
 	UserAddError     = 1101
 	UserUpdateError  = 1102
 	UserRegisterFail = 1103
+	UserNotExist
 
 	RoleExist     = 1300
 	GroupNotExist = 1200

@@ -24,6 +24,7 @@ func Admin(r iris.Party) {
 	r.Get("/register", v1.Register)
 	r.Post("/role", v1.Role)
 	r.Get("/role", v1.RoleList)
+	r.Get("/user", v1.GetUserPer)
 
 }
 

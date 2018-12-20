@@ -23,8 +23,37 @@ type User struct {
 用户登录
 */
 
-func Login(name, pwd, gid string) {
+func Login(account, pwd, gid string) int {
+	uid := commons.EncodeMd5(commons.StringJoin(account, gid))
+	pw := commons.EncodeMd5(commons.StringJoin(pwd, account, gid))
+	u := new(User)
+	if !CheckBool(config.EngDb.Where("id = ? and password = ? and is_del = 1 and status = 1 ", uid, pw).Get(&u)) {
+		return e.UserNotExist
+	}
 
+	/**
+	用户存在,这时候查询权限同步权限
+	*/
+
+	return e.Success
+
+}
+
+/**
+查询用户权限
+*/
+func GetUserPer() (ret []map[string]string) {
+	sql := " SELECT m.`url`, m.`name`, m.`type` FROM " +
+		"`user` u, user_role ur, role_menu rm, `menu` m " +
+		" WHERE u.`id` = ur.`uid` AND ur.`rid` = rm.`rid` " +
+		" AND rm.`mid` = m.`id` " +
+		" AND u.`id` = '899d2e464b258017d51af34043bda85a' " +
+		"UNION " +
+		" SELECT m.`url`, m.`name`, m.`type` " +
+		" FROM `user` u, `user_menu` um, `menu` m " +
+		" WHERE u.`id` = um.uid AND um.mid = m.id AND u.`id` = '899d2e464b258017d51af34043bda85a'"
+	ret, _ = config.EngDb.QueryString(sql)
+	return ret
 }
 
 /**

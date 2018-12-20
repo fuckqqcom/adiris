@@ -9,4 +9,5 @@ func main() {
 	config.InitConfig("config/config.json")
 	routers.InitRouter()
 	//monitor.RedisInfo()
+
 }

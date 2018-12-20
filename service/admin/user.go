@@ -19,3 +19,7 @@ func (u User) Register() int {
 	a := commons.RandStringBytes(4) + fmt.Sprintf("%s", time.Now().UnixNano())
 	return admin.Register(u.Account+a, u.Password+a, u.Gid)
 }
+
+func (u User) GetUserPer() {
+	admin.GetUserPer()
+}

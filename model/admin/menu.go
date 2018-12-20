@@ -2,7 +2,6 @@ package admin
 
 import (
 	"adiris/pkg/config"
-	"adiris/pkg/e"
 	"adiris/tools/common"
 )
 
@@ -11,6 +10,7 @@ type Menu struct {
 	IsDel    int
 	Remark   string
 	Status   int
+	Method   string
 	Name     string //菜单名称
 	ParentId string //父菜单Id，一级菜单为0
 	Url      string //菜单url,类型：1.普通页面（如用户管理， /sys/user） 2.嵌套完整外部页面，以http(s)开头的链接 3.嵌套服务器页面，使用iframe:前缀+目标URL(如SQL监控， iframe:/druid/login.html, iframe:前缀会替换成服务器地址)'
@@ -20,7 +20,7 @@ type Menu struct {
 }
 
 /**
-添加菜单/todo
+添加菜单/todo 添加菜单这里有问题
 */
 
 func AddMenu(name, remark string, status int) int {
@@ -47,7 +47,7 @@ func DeleteMenu(id string) int {
 
 func UpdateMenu(name, remark string, status int) int {
 	m := Menu{Id: commons.EncodeMd5(name), IsDel: 1, Name: name, Status: status, Remark: remark}
-	return CheckInt64(config.EngDb.Where("id = ? ", r.Id).Cols("remark", "status", "name").Update(m))
+	return CheckInt64(config.EngDb.Where("id = ? ", m.Id).Cols("remark", "status", "name").Update(m))
 }
 
 /**

@@ -22,3 +22,12 @@ func Register(c app.Eng) {
 	m["code"] = u.Register()
 	r.Response(m)
 }
+
+func GetUserPer(c app.Eng) {
+	r := app.R{c}
+	m := make(map[string]interface{})
+	var u admin.User
+
+	u.GetUserPer()
+	r.Response(m)
+}
